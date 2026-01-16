@@ -78,7 +78,7 @@ class TesseractOcrProcessJob implements ShouldQueue
 
         // Correct Queue URLs for OCR
         $queueUrl = $sqs->getQueueUrl([
-            'QueueName' => config('services.aws.sqs.ocr_trigger'),
+            'QueueName' => config('services.aws.sqs.image_trigger'),
         ])['QueueUrl'];
 
         $updatesQueueUrl = $sqs->getQueueUrl([

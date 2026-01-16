@@ -20,7 +20,6 @@
 
 namespace App\Jobs;
 
-use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
 use App\Services\Subject\SubjectService;
 use Illuminate\Bus\Queueable;
@@ -80,7 +79,7 @@ class TesseractOcrUpdateJob implements ShouldQueue
      */
     public function handle(SubjectService $subjectService): void
     {
-        // Primary lookup by ID if available, otherwise fallback to subject_id lookup
+        // Simple lookup - no relationship needed for the main worker loop
         $file = $this->fileId > 0
             ? OcrQueueFile::find($this->fileId)
             : OcrQueueFile::where('subject_id', $this->subjectId)
@@ -91,18 +90,14 @@ class TesseractOcrUpdateJob implements ShouldQueue
             \Log::warning('TesseractOcrUpdateJob: File not found', [
                 'file_id' => $this->fileId,
                 'subject_id' => $this->subjectId,
-                'queue_id' => $this->queueId,
             ]);
 
             return;
         }
 
-        $wasProcessed = $file->processed;
-
         if ($this->status === 'success') {
             $text = trim(preg_replace('/\s+/', ' ', $this->text));
             $text = $text !== '' ? $text : '[OCR produced no text]';
-
             $subjectService->update(['ocr' => $text], $this->subjectId);
         } else {
             $errorText = '[OCR Failed] '.($this->error ?? 'Unknown error');
@@ -111,45 +106,25 @@ class TesseractOcrUpdateJob implements ShouldQueue
 
         $file->processed = 1;
         $file->save();
-
-        // Only check completion if this file just flipped to processed
-        if (! $wasProcessed) {
-            $this->checkIfOcrComplete($file);
-        }
-    }
-
-    /**
-     * Check if all files in the OCR queue have been processed.
-     *
-     * If all files are processed, dispatches the completion job.
-     *
-     * @param  OcrQueueFile  $file  The processed queue file
-     */
-    private function checkIfOcrComplete(OcrQueueFile $file): void
-    {
-        $queue = OcrQueue::find($file->queue_id);
-
-        if (! $queue || ! $queue->queued) {
-            return;
-        }
-
-        $total = $queue->files()->count();
-        $processed = $queue->files()->where('processed', 1)->count();
-
-        if ($total === $processed) {
-            TesseractOcrCompleteJob::dispatch($queue);
-        }
     }
 
     /**
      * Handle a job failure.
+     *
+     * Uses eager loading to directly access and flag the parent queue as errored.
      */
     public function failed(Throwable $throwable): void
     {
-        $file = OcrQueueFile::find($this->fileId);
-        if ($file && $queue = OcrQueue::find($file->queue_id)) {
-            $queue->error = 1;
-            $queue->save();
+        $file = $this->fileId > 0
+            ? OcrQueueFile::with('ocrQueue')->find($this->fileId)
+            : OcrQueueFile::with('ocrQueue')
+                ->where('subject_id', $this->subjectId)
+                ->where('processed', 0)
+                ->first();
+
+        if ($file && $file->ocrQueue) {
+            $file->ocrQueue->error = 1;
+            $file->ocrQueue->save();
         }
     }
 }

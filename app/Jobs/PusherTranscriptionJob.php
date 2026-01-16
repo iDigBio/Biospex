@@ -75,9 +75,6 @@ class PusherTranscriptionJob implements ShouldQueue
             $service->create($this->dashboardData);
         } catch (BulkWriteException $e) {
             if (str_contains($e->getMessage(), 'E11000 duplicate key error')) {
-                \Log::info('Duplicate classification skipped', [
-                    'id' => $this->dashboardData['classification_id'] ?? null,
-                ]);
                 $this->delete(); // Don't retry
             } else {
                 throw $e; // Retry other errors

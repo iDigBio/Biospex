@@ -95,8 +95,6 @@ class AppFileDeploymentCommand extends Command
             throw new Exception("No supervisor template files found in: {$supervisorPath}");
         }
 
-        Log::info('Found '.count($files).' supervisor template file(s)');
-
         return collect($files);
     }
 
@@ -233,10 +231,6 @@ class AppFileDeploymentCommand extends Command
                 if ($replace !== null && $replace !== '' && str_contains($original, $search)) {
                     $changes++;
                 }
-            }
-
-            if ($changes === 0) {
-                Log::info('  <fg=gray>No replacements needed</>');
             }
         }
     }

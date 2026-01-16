@@ -58,3 +58,4 @@ laradumps.yaml
 /.ai/
 /.github/
 /.vscode/
+/clean-logs.sh

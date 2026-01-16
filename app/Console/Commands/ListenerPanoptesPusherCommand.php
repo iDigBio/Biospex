@@ -661,54 +661,21 @@ class ListenerPanoptesPusherCommand extends Command
 
     private function shouldSendEmailNotification(string $message): bool
     {
-        // Don't send regular error emails if we're already in a quota cooldown
-        if (Cache::has('panoptes_listener_quota_cooldown')) {
-            return false;
-        }
-
-        // Rate limiting - use Cache instead of $this->lastEmailSent to survive restarts
-        $key = 'panoptes_listener_regular_email_sent';
-        $lastSent = Cache::get($key, 0);
-        $now = time();
-
-        if (($now - $lastSent) < 900) {
-            return false;
-        }
-
-        // Send emails for certain types of errors
-        $criticalKeywords = ['critical', 'failed to start', 'max reconnection', 'configuration', 'dispatch'];
-
-        foreach ($criticalKeywords as $keyword) {
-            if (stripos($message, $keyword) !== false) {
-                Cache::put($key, $now, 1000); // Record in cache
-
-                return true;
-            }
-        }
-
-        return false;
+        return $this->shouldSendCriticalEmail();
     }
 
     /**
-     * Check if a critical email should be sent (rate limited to once per hour).
+     * Check if an email should be sent (strictly rate limited to once per hour).
      */
     private function shouldSendCriticalEmail(): bool
     {
-        // Double check quota cooldown here as well
-        if (Cache::has('panoptes_listener_quota_cooldown')) {
+        $key = 'panoptes_listener_global_email_cooldown';
+
+        if (Cache::has($key)) {
             return false;
         }
 
-        $key = 'panoptes_listener_critical_email_sent';
-        $lastSent = Cache::get($key, 0);
-        $now = time();
-
-        // Only send critical emails once per hour
-        if (($now - $lastSent) < 3600) {
-            return false;
-        }
-
-        Cache::put($key, $now, 3700); // Cache for slightly longer than check period
+        Cache::put($key, true, 3600); // Lock for 1 hour
 
         return true;
     }
@@ -761,6 +728,9 @@ class ListenerPanoptesPusherCommand extends Command
             $body .= 'Type: '.get_class($e)."\n";
             $body .= 'Message: '.$e->getMessage()."\n";
             $body .= 'File: '.$e->getFile().':'.$e->getLine()."\n\n";
+
+            $body .= "Stack Trace:\n";
+            $body .= $e->getTraceAsString()."\n\n";
         }
 
         if (! empty($context)) {

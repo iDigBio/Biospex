@@ -52,17 +52,6 @@ class AppServiceProvider extends ServiceProvider
 
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventAccessingMissingAttributes(! $this->app->isProduction());
-
-        /*
-        // Check if the application is running in the local environment
-        if (config('config.db_log') && $this->app->environment('local')) {
-            // Register a listener for database queries
-            DB::listen(function ($query) {
-                // Log the query with parameters
-                Log::info($query->sql, $query->bindings);
-            });
-        }
-        */
     }
 
     /**
@@ -100,43 +89,19 @@ class AppServiceProvider extends ServiceProvider
         $key = config('services.aws.credentials.key');
         $secret = config('services.aws.credentials.secret');
 
+        // If keys are in .env, use them. If not, the SDK automatically
+        // uses the IAM Role (for EC2/Production).
         if (! empty($key) && ! empty($secret)) {
-            // Case 1: Keys provided via .env (CI or specific local setup)
             $awsConfig['credentials'] = [
                 'key' => $key,
                 'secret' => $secret,
             ];
-        } else {
-            // Fix for Supervisor/Background processes on local WSL:
-            // Explicitly point to the credentials file when running locally.
-            $localCreds = '/home/ubuntu/.aws/credentials';
-
-            if (app()->isLocal() && file_exists($localCreds)) {
-                $awsConfig['credentials'] = \Aws\Credentials\CredentialProvider::ini('default', $localCreds);
-            } else {
-                // EC2 IAM Role fallback (Production/Development)
-                $awsConfig['credentials'] = \Aws\Credentials\CredentialProvider::defaultProvider();
-            }
         }
 
-        // Register AWS SQS Client
-        $this->app->singleton(SqsClient::class, function ($app) use ($awsConfig) {
-            return new SqsClient($awsConfig);
-        });
-
-        // Register AWS S3 Client
-        $this->app->singleton(S3Client::class, function ($app) use ($awsConfig) {
-            return new S3Client($awsConfig);
-        });
-
-        // Register AWS Step Functions Client
-        $this->app->singleton(SfnClient::class, function ($app) use ($awsConfig) {
-            return new SfnClient($awsConfig);
-        });
-
-        // Register AWS Lambda Client
-        $this->app->singleton(LambdaClient::class, function ($app) use ($awsConfig) {
-            return new LambdaClient($awsConfig);
-        });
+        // Register AWS Clients as singletons
+        $this->app->singleton(SqsClient::class, fn () => new SqsClient($awsConfig));
+        $this->app->singleton(S3Client::class, fn () => new S3Client($awsConfig));
+        $this->app->singleton(SfnClient::class, fn () => new SfnClient($awsConfig));
+        $this->app->singleton(LambdaClient::class, fn () => new LambdaClient($awsConfig));
     }
 }

@@ -60,8 +60,6 @@ class TesseractOcrCreateJob implements ShouldQueue
     public function handle(TesseractOcrBuild $tesseractOcrBuild, TesseractOcrQueueService $queueService): void
     {
         if (! config('config.ocr_enabled')) {
-            logger()->info('OCR is disabled.');
-
             return;
         }
 

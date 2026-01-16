@@ -79,7 +79,11 @@ class SqsListenerOcrUpdate extends Command
 
     private function routeMessage(array $data): void
     {
-        $fileId = $data['fileId'] ?? throw new InvalidArgumentException('Missing fileId');
+        // Allow either fileId OR subjectId for flexibility (especially for DLQ or metadata-only updates)
+        if (! isset($data['fileId']) && ! isset($data['subjectId'])) {
+            throw new InvalidArgumentException('Invalid message format: Missing both fileId and subjectId');
+        }
+
         $status = $data['status'] ?? throw new InvalidArgumentException('Missing status');
 
         // Dispatch job for BOTH success and failure

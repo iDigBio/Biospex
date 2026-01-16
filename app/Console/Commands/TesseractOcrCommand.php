@@ -66,6 +66,10 @@ class TesseractOcrCommand extends Command
         }
 
         try {
+            // 1. Check for finished batches
+            $this->service->checkActiveQueuesForCompletion();
+
+            // 2. Start the next batch if one is ready
             $this->service->processNextQueue($this->option('reset'));
         } catch (Throwable $e) {
             $this->fail($e);

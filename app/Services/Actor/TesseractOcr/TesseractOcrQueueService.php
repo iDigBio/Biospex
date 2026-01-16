@@ -43,6 +43,32 @@ class TesseractOcrQueueService
     ) {}
 
     /**
+    /**
+     * Check for the active queue to see if it has finished processing.
+     */
+    public function checkActiveQueuesForCompletion(): void
+    {
+        // Find the single active, error-free queue currently in progress
+        $queue = $this->ocrQueue
+            ->where('queued', 1)
+            ->where('stage', 1)
+            ->where('error', 0)
+            ->first();
+
+        // If no active queue exists, there's nothing to check
+        if (! $queue) {
+            return;
+        }
+
+        // Check if all files are processed
+        $isDone = ! $queue->files()->where('processed', 0)->exists();
+
+        if ($isDone) {
+            \App\Jobs\TesseractOcrCompleteJob::dispatch($queue);
+        }
+    }
+
+    /**
      * Process the next queue item in the OCR queue.
      *
      * @param  bool  $reset  Whether to reset and process from the first queue item
