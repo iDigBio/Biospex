@@ -121,9 +121,6 @@ task('deploy', [
     'artisan:optimize',        // Run Laravel optimization
     'artisan:filament:optimize',   // Optimize Filament resources and assets
 
-    // Phase 6: OpCache Management (Production Only)
-    'opcache:reset',
-
     // Phase 7: Domain-Specific Supervisor Management
     'supervisor:reload', // Update configs only
     'artisan:queue:restart',
@@ -131,7 +128,11 @@ task('deploy', [
     // Phase 8: Finalization
     'set:permissions',
     'deploy:clear_paths',      // Remove unnecessary files/directories
-    'deploy:publish',
+    'deploy:publish',          // <--- SYMLINK SWITCHES HERE
+
+    // Phase 6: OpCache Management (Now moved after publish)
+    'opcache:reset',           // <--- NOW IT WILL FIND THE ROUTE
+
     'deploy:verify-structure', // Verify flat structure post-deploy
 ]);
 
