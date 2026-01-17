@@ -3,8 +3,10 @@
         <!-- Grid row-->
         <div class="row py-3 align-items-center">
             <!-- Grid column -->
-            <div class="col-md-12 text-center d-inline d-sm-flex align-items-start justify-content-between">
-                <a class="figure-img" href="https://www.fsu.edu" target="_blank"><img src="/images/contributors/fsu.png" alt="FSU"></a>
+            <div class="col-md-12 text-center d-inline d-sm-flex align-items-center justify-content-between">
+                <a href="https://www.fsu.edu" target="_blank">
+                    <img src="/images/contributors/fsu-logo.svg" alt="FSU" style="width: 100px; height: auto;">
+                </a>
                 <!-- <a class="figure-img" href="https://www.floridamuseum.ufl.edu/" target="_blank"><img src="/images/contributors/flmnh.png" alt="Florida Museum"></a> -->
                 <a class="figure-img" href="https://idiginfo.org" target="_blank"><img src="/images/contributors/idiginfo.png" alt="iDigInfo" style="max-width:200px; margin-top:20px;"></a>
                 <a class="figure-img" href="https://www.idigbio.org/" target="_blank"><img src="/images/contributors/idigbio.png" alt="iDigBio" style="max-width:200px; margin-top:-10px;"></a>
