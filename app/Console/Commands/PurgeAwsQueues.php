@@ -61,7 +61,7 @@ class PurgeAwsQueues extends Command
             return 1;
         }
 
-        $queues = config('services.aws.queues');
+        $queues = config('services.aws.sqs');
 
         $this->info("Purging queues for environment: <comment>{$env}</comment>");
 

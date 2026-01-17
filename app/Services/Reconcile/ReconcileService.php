@@ -21,7 +21,6 @@
 namespace App\Services\Reconcile;
 
 use App\Traits\SkipZooniverse;
-use Artisan;
 use Aws\Sqs\SqsClient;
 
 /**
@@ -45,7 +44,7 @@ class ReconcileService
      */
     public function sendToReconcileTriggerQueue(int $expeditionId, bool $explanations = false): void
     {
-        $name = config('services.aws.queues.reconcile_trigger');
+        $name = config('services.aws.sqs.reconcile_trigger');
 
         if (! $name) {
             throw new \RuntimeException('Missing config: services.aws.reconcile_trigger');
@@ -64,6 +63,8 @@ class ReconcileService
             'MessageBody' => json_encode($message),
         ]);
 
-        Artisan::queue('reconcile:listen-controller start')->onQueue(config('config.queue.default'));
+        // Update to unified controller
+        \Artisan::queue('sqs:control reconcile_update --action=start')
+            ->onQueue(config('config.queue.default'));
     }
 }

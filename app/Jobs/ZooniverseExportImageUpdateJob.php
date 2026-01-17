@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\ExportQueue;
 use App\Models\ExportQueueFile;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,6 +18,8 @@ use Illuminate\Queue\SerializesModels;
 class ZooniverseExportImageUpdateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public ?int $fileId;
 
     public int $queueId;
 
@@ -41,6 +42,7 @@ class ZooniverseExportImageUpdateJob implements ShouldQueue
      */
     public function __construct(array $data)
     {
+        $this->fileId = isset($data['fileId']) ? (int) $data['fileId'] : null;
         $this->queueId = (int) $data['queueId'];
         $this->subjectId = (string) $data['subjectId'];
         $this->status = (string) $data['status'];
@@ -56,12 +58,16 @@ class ZooniverseExportImageUpdateJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $file = ExportQueueFile::where('queue_id', $this->queueId)
-            ->where('subject_id', $this->subjectId)
-            ->first();
+        // Primary lookup by ID if available, otherwise fallback to legacy lookup
+        $file = $this->fileId
+            ? ExportQueueFile::find($this->fileId)
+            : ExportQueueFile::where('queue_id', $this->queueId)
+                ->where('subject_id', $this->subjectId)
+                ->first();
 
         if (! $file) {
             \Log::warning('ZooniverseExportImageUpdateJob: File not found', [
+                'file_id' => $this->fileId,
                 'queue_id' => $this->queueId,
                 'subject_id' => $this->subjectId,
             ]);
@@ -69,42 +75,13 @@ class ZooniverseExportImageUpdateJob implements ShouldQueue
             return;
         }
 
-        $wasProcessed = $file->processed;  // Cache for guard
-
-        $file->processed = 1;
-        $file->tries = $file->tries + 1;
+        // If the fetcher reported a failure, log the error message
         if ($this->status !== 'success') {
             $file->message = $this->error ?? 'Processing failed';
         }
 
-        $saved = $file->save();
-
-        // Only check/increment if this newly advanced processed (success or fail)
-        if ($saved && $wasProcessed !== 1) {
-            $this->checkIfExportComplete();
-        }
-    }
-
-    /**
-     * Check if all files in the export queue have been processed.
-     *
-     * If all files are processed and the queue is in stage 1,
-     * advances to stage 2 and dispatches the CSV build job.
-     */
-    private function checkIfExportComplete(): void
-    {
-        $queue = ExportQueue::find($this->queueId);
-        if (! $queue) {
-            return;
-        }
-
-        $total = $queue->files()->count();
-        $processed = $queue->files()->where('processed', 1)->count();
-
-        if ($total === $processed && $queue->stage === 1) {
-            $queue->stage = 2;
-            $queue->save();
-            ZooniverseExportBuildCsvJob::dispatch($queue);
-        }
+        $file->processed = 1;
+        $file->tries = $file->tries + 1;
+        $file->save();
     }
 }

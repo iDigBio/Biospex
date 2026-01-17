@@ -52,17 +52,6 @@ class AppServiceProvider extends ServiceProvider
 
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventAccessingMissingAttributes(! $this->app->isProduction());
-
-        /*
-        // Check if the application is running in the local environment
-        if (config('config.db_log') && $this->app->environment('local')) {
-            // Register a listener for database queries
-            DB::listen(function ($query) {
-                // Log the query with parameters
-                Log::info($query->sql, $query->bindings);
-            });
-        }
-        */
     }
 
     /**
@@ -97,31 +86,22 @@ class AppServiceProvider extends ServiceProvider
             'region' => config('services.aws.region', 'us-east-2'),
         ];
 
-        // If keys are in .env, use them.
-        // If NOT (Local ~/.aws/credentials or Server IAM Role),
-        // omitting 'credentials' lets the SDK find them automatically.
-        if (config('services.aws.credentials.key') && config('services.aws.credentials.secret')) {
-            $awsConfig['credentials'] = config('services.aws.credentials');
+        $key = config('services.aws.credentials.key');
+        $secret = config('services.aws.credentials.secret');
+
+        // If keys are in .env, use them. If not, the SDK automatically
+        // uses the IAM Role (for EC2/Production).
+        if (! empty($key) && ! empty($secret)) {
+            $awsConfig['credentials'] = [
+                'key' => $key,
+                'secret' => $secret,
+            ];
         }
 
-        // Register AWS SQS Client
-        $this->app->singleton(SqsClient::class, function ($app) use ($awsConfig) {
-            return new SqsClient($awsConfig);
-        });
-
-        // Register AWS S3 Client
-        $this->app->singleton(S3Client::class, function ($app) use ($awsConfig) {
-            return new S3Client($awsConfig);
-        });
-
-        // Register AWS Step Functions Client
-        $this->app->singleton(SfnClient::class, function ($app) use ($awsConfig) {
-            return new SfnClient($awsConfig);
-        });
-
-        // Register AWS Lambda Client
-        $this->app->singleton(LambdaClient::class, function ($app) use ($awsConfig) {
-            return new LambdaClient($awsConfig);
-        });
+        // Register AWS Clients as singletons
+        $this->app->singleton(SqsClient::class, fn () => new SqsClient($awsConfig));
+        $this->app->singleton(S3Client::class, fn () => new S3Client($awsConfig));
+        $this->app->singleton(SfnClient::class, fn () => new SfnClient($awsConfig));
+        $this->app->singleton(LambdaClient::class, fn () => new LambdaClient($awsConfig));
     }
 }

@@ -25,9 +25,9 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('export:queue')->everyTwoMinutes();
-Schedule::command('tesseract:ocr-process')->everyTwoMinutes();
-Schedule::command('cache:prune-stale-tags')->hourly();
+Schedule::command('export:queue')->everyMinute()->withoutOverlapping();
+Schedule::command('tesseract:ocr-process')->everyMinute()->withoutOverlapping();
+Schedule::command('cache:prune-stale-tags')->hourly()->withoutOverlapping();
 // Schedule::command('queue:prune-batches --hours=48 --unfinished=72')->daily();
 
 // Clean bingo maps

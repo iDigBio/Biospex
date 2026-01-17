@@ -70,7 +70,6 @@ class CleanEfsDirsCommand extends Command
 
             if ($lastModified->lessThan($threshold)) {
                 File::delete($file); // Use the File facade to delete
-                \Log::info("Deleted file: $file");
                 $deletedFiles++;
             }
         }

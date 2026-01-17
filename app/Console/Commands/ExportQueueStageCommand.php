@@ -87,8 +87,8 @@ class ExportQueueStageCommand extends Command
         $queue->error = 0;
         $queue->save();
 
-        \Artisan::call('update:listen-controller start');
-
+        // Start both the specific update listener and the shared DLQ listener
+        \Artisan::call('sqs:control export_update image_trigger_dlq --action=start');
         try {
             match ($queue->stage) {
                 1 => ZooniverseExportProcessImagesJob::dispatch($queue),

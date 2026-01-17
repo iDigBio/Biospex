@@ -60,7 +60,9 @@ class ZooniverseExportBatchResultJob implements ShouldQueue
 
         $download->expedition->project->group->owner->notify(new Generic($attributes, true));
 
-        \Artisan::call('batch:listen-controller stop');
+        // Stop the listener using the unified controller
+        \Artisan::call('sqs:control batch_update --action=stop');
+
     }
 
     private function generateLink(string $file): string

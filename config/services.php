@@ -64,11 +64,12 @@ return [
         ],
 
         // SQS QUEUE NAMES
-        'queues' => [
+        'sqs' => [
             // previously env('AWS_SQS_*'), now derived from APP_ENV
             'batch_trigger' => "{$queuePrefix}-batch-trigger",
             'batch_update' => "{$queuePrefix}-batch-update",
-            'export_image_tasks' => "{$queuePrefix}-export-image-tasks",
+            'image_trigger' => "{$queuePrefix}-image-trigger",
+            'image_trigger_dlq' => "{$queuePrefix}-image-trigger-dlq",
             'export_update' => "{$queuePrefix}-export-update",
             'export_zip_trigger' => "{$queuePrefix}-export-zip-trigger",
             'reconcile_trigger' => "{$queuePrefix}-reconcile-trigger",
@@ -90,6 +91,8 @@ return [
             'BiospexLabelReconcile' => 8,
             'BiospexBatchCreator' => 1,
             'BiospexZipCreator' => 10,
+            'BiospexImageFetcher' => 100, // Your new universal downloader
+            'BiospexOcrProcessor' => 100, // Your new OCR engine
         ],
     ],
 ];

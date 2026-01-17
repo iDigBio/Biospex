@@ -69,7 +69,7 @@ class SqsListenerBatchUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.batch_update',
+            'services.aws.sqs.batch_update',
             'services.aws.region',
         ];
 

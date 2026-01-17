@@ -56,7 +56,7 @@ class SqsListenerOcrUpdate extends Command
     private function validateConfiguration(): void
     {
         $required = [
-            'services.aws.queues.ocr_update',
+            'services.aws.sqs.ocr_update',
             'services.aws.region',
         ];
 
@@ -79,7 +79,11 @@ class SqsListenerOcrUpdate extends Command
 
     private function routeMessage(array $data): void
     {
-        $ocrQueueFileId = $data['ocrQueueFileId'] ?? throw new InvalidArgumentException('Missing ocrQueueFileId');
+        // Allow either fileId OR subjectId for flexibility (especially for DLQ or metadata-only updates)
+        if (! isset($data['fileId']) && ! isset($data['subjectId'])) {
+            throw new InvalidArgumentException('Invalid message format: Missing both fileId and subjectId');
+        }
+
         $status = $data['status'] ?? throw new InvalidArgumentException('Missing status');
 
         // Dispatch job for BOTH success and failure

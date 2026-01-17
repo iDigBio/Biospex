@@ -132,6 +132,7 @@ class SubjectService
 
         return $query->where(function ($q) {
             $q->where('ocr', '')
+                ->orWhereNull('ocr')
                 ->orWhere('ocr', '[OCR produced no text]')
                 ->orWhere('ocr', 'regex', '/^\[OCR Failed\]/i')
                 ->orWhere('ocr', 'regex', '/^Error/i');
@@ -148,6 +149,7 @@ class SubjectService
 
         return $query->where(function ($query) {
             $query->where('ocr', '')
+                ->orWhereNull('ocr')
                 ->orWhere('ocr', '[OCR produced no text]')
                 ->orWhere('ocr', 'regex', '/^\[OCR Failed\]/i')
                 ->orWhere('ocr', 'regex', '/^Error/i');

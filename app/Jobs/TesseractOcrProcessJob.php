@@ -65,38 +65,51 @@ class TesseractOcrProcessJob implements ShouldQueue
         // Count files first for logging/logic
         $totalFiles = $this->ocrQueue->files()->where('processed', 0)->count();
 
-        // If no files → do nothing (could be re-run or race)
+        // If no files → do nothing
         if ($totalFiles === 0) {
             throw new \Exception("No unprocessed files found for ocr queue ID: {$this->ocrQueue->id}");
         }
 
-        \Artisan::queue('ocr:listen-controller start')
+        // Unified call to start the OCR update listener and the shared DLQ listener
+        \Artisan::queue('sqs:control ocr_update image_trigger_dlq --action=start')
             ->onQueue(config('config.queue.default'));
 
         $sentCount = 0;
 
+        // Correct Queue URLs for OCR
         $queueUrl = $sqs->getQueueUrl([
-            'QueueName' => config('services.aws.queues.ocr_trigger'),
+            'QueueName' => config('services.aws.sqs.image_trigger'),
         ])['QueueUrl'];
 
         $updatesQueueUrl = $sqs->getQueueUrl([
-            'QueueName' => config('services.aws.queues.ocr_update'), // e.g. loc-ocr-update
+            'QueueName' => config('services.aws.sqs.ocr_update'),
         ])['QueueUrl'];
+
+        $ocrDir = config('zooniverse.directory.lambda-ocr-wip');
+        $s3Bucket = config('filesystems.disks.s3.bucket');
 
         // Use chunking to save memory and by id to lock rows
         $this->ocrQueue->files()
             ->where('processed', 0)
             ->orderBy('id')
-            ->chunkById(1000, function ($files) use ($sqs, $queueUrl, $updatesQueueUrl, &$sentCount) {
+            ->chunkById(1000, function ($files) use ($sqs, $queueUrl, $updatesQueueUrl, $ocrDir, $s3Bucket, &$sentCount) {
                 $batch = [];
                 foreach ($files as $file) {
+                    $s3Path = "{$ocrDir}/{$this->ocrQueue->id}/{$file->subject_id}.jpg";
+
                     $batch[] = [
                         'Id' => (string) $file->id,
                         'MessageBody' => json_encode([
-                            'ocrQueueFileId' => $file->id,
+                            'taskType' => 'ocr',
+                            'queueId' => $this->ocrQueue->id, // Parent batch ID
+                            'fileId' => $file->id,           // Specific file ID
                             'subjectId' => $file->subject_id,
-                            'access_uri' => $file->access_uri,
+                            'accessURI' => $file->access_uri,
+                            's3Bucket' => $s3Bucket,
+                            's3Path' => $s3Path,
                             'updatesQueueUrl' => $updatesQueueUrl,
+                            'maxWidth' => 2500,
+                            'maxHeight' => 2500,
                         ]),
                     ];
 
@@ -110,7 +123,6 @@ class TesseractOcrProcessJob implements ShouldQueue
                     }
                 }
 
-                // Send remaining messages
                 if (! empty($batch)) {
                     $sqs->sendMessageBatch([
                         'QueueUrl' => $queueUrl,
@@ -120,7 +132,6 @@ class TesseractOcrProcessJob implements ShouldQueue
                 }
             }, 'id');
 
-        // $ $sentCount === $totalFiles
         if ($sentCount !== $totalFiles) {
             \Artisan::queue('app:lambda-control', [
                 'lambda' => 'BiospexTesseractOcr',

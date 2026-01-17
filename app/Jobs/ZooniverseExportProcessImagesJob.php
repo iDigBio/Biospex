@@ -65,55 +65,60 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
         // Count files first for logging/logic
         $totalFiles = $this->exportQueue->files()->where('processed', 0)->count();
 
-        // If no files → do nothing (could be re-run or race)
+        // If no files → do nothing
         if ($totalFiles === 0) {
             throw new \Exception("No unprocessed files found for export queue ID: {$this->exportQueue->id}");
         }
 
         $sentCount = 0;
 
+        // Retrieve Queue URLs needed for the payload
         $queueUrl = $sqs->getQueueUrl([
-            'QueueName' => config('services.aws.queues.export_image_tasks'),
+            'QueueName' => config('services.aws.sqs.image_trigger'),
         ])['QueueUrl'];
 
         $updatesQueueUrl = $sqs->getQueueUrl([
-            'QueueName' => config('services.aws.queues.export_update'),
+            'QueueName' => config('services.aws.sqs.export_update'),
         ])['QueueUrl'];
 
         $processDir = "{$this->exportQueue->id}-".config('zooniverse.actor_id')."-{$this->exportQueue->expedition->uuid}";
+        $s3Bucket = config('filesystems.disks.s3.bucket');
 
         // Use chunking to save memory and by id to lock rows
+        // ADDED $totalFiles to the use() block below
         $this->exportQueue->files()
             ->where('processed', 0)
             ->orderBy('id')
-            ->chunkById(1000, function ($files) use ($sqs, $queueUrl, $updatesQueueUrl, $processDir, &$sentCount) {
+            ->chunkById(1000, function ($files) use ($sqs, $queueUrl, $updatesQueueUrl, $processDir, $s3Bucket, &$sentCount) {
                 $batch = [];
                 foreach ($files as $index => $file) {
                     $batch[] = [
-                        'Id' => (string) $file->id, // Required: unique string for the batch
+                        'Id' => (string) $file->id,
                         'MessageBody' => json_encode([
-                            'processDir' => $processDir,
-                            'accessURI' => $file->access_uri,
-                            'subjectId' => $file->subject_id,
-                            's3Bucket' => config('filesystems.disks.s3.bucket'),
-                            'updatesQueueUrl' => $updatesQueueUrl,
+                            'taskType' => 'export',
                             'queueId' => $this->exportQueue->id,
+                            'fileId' => $file->id,
+                            'subjectId' => $file->subject_id,
+                            'accessURI' => $file->access_uri,
+                            's3Bucket' => $s3Bucket,
+                            's3Path' => "scratch/{$processDir}/{$file->subject_id}.jpg",
+                            'updatesQueueUrl' => $updatesQueueUrl,
+                            'maxWidth' => 1500,
+                            'maxHeight' => 1500,
                         ]),
                     ];
 
-                    // SQS Batch limit is 10
                     if (count($batch) === 10) {
                         $sqs->sendMessageBatch([
                             'QueueUrl' => $queueUrl,
                             'Entries' => $batch,
                         ]);
-                        $sentCount += count($batch);
+                        $sentCount += 10;
                         $batch = [];
                     }
                 }
 
-                // Send remaining messages (less than 10)
-                if (count($batch) > 0) {
+                if (! empty($batch)) {
                     $sqs->sendMessageBatch([
                         'QueueUrl' => $queueUrl,
                         'Entries' => $batch,
@@ -122,7 +127,7 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
                 }
             }, 'id');
 
-        // $ $sentCount === $totalFiles
+        // Check if all messages were sent successfully
         if ($sentCount !== $totalFiles) {
             \Artisan::queue('app:lambda-control', [
                 'lambda' => 'BiospexImageProcess',

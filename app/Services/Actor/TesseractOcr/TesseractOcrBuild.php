@@ -56,10 +56,15 @@ class TesseractOcrBuild
      */
     public function createOcrQueue(Project $project, ?Expedition $expedition, int $total): OcrQueue
     {
-        return $this->ocrQueue->firstOrCreate([
+        return $this->ocrQueue->create([
             'project_id' => $project->id,
             'expedition_id' => $expedition?->id,
-        ], ['total' => $total]);
+            'total' => $total,
+            'queued' => 0,
+            'stage' => 0,
+            'files_ready' => 0,
+            'error' => 0,
+        ]);
     }
 
     /**

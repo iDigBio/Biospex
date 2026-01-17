@@ -59,7 +59,8 @@ class FlashHelperMessage
 
                     // Create a simple session cookie (minutes=0)
                     // No domain, No secure (for local testing), No httpOnly
-                    $response->withCookie(cookie('app_flash', $payload, 0, '/', null, false, false, false, 'Lax'));
+                    $domain = config('session.domain');
+                    $response->withCookie(cookie('app_flash', $payload, 0, '/', $domain, false, false, false, 'Lax'));
 
                     session()->forget($type);
 

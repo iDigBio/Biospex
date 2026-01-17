@@ -23,7 +23,6 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\Generic;
 use App\Services\Csv\ZooniverseCsvService;
-use Artisan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -56,7 +55,8 @@ class ZooniverseCsvDownloadJob implements ShouldQueue
     {
         $service->downloadCsv($this->expeditionId, $this->uri);
 
-        Artisan::call('reconcile:listen-controller start');
+        // Update to unified controller
+        \Artisan::call('sqs:control reconcile_update --action=start');
     }
 
     /**

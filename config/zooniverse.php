@@ -29,6 +29,7 @@ return [
         'explained' => 'zooniverse/explained',
         'lambda-reconciliation' => 'zooniverse/lambda-reconciliation',
         'lambda-ocr' => 'zooniverse/lambda-ocr',
+        'lambda-ocr-wip' => 'zooniverse/lambda-ocr-wip',
     ],
 
     'file_types' => [

@@ -20,7 +20,6 @@
 
 namespace App\Jobs;
 
-use App\Models\OcrQueue;
 use App\Models\OcrQueueFile;
 use App\Services\Subject\SubjectService;
 use Illuminate\Bus\Queueable;
@@ -44,7 +43,9 @@ class TesseractOcrUpdateJob implements ShouldQueue
 
     public int $timeout = 1500;
 
-    protected int $ocrQueueFileId;
+    protected int $fileId;
+
+    protected int $queueId;
 
     protected string $subjectId;
 
@@ -57,18 +58,14 @@ class TesseractOcrUpdateJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param  array  $data  Array containing OCR processing results with keys:
-     *                       - ocrQueueFileId: ID of the OCR queue file
-     *                       - subjectId: ID of the subject
-     *                       - status: Processing status ('success'|'failed')
-     *                       - text: OCR extracted text (optional)
-     *                       - error: Error message if failed (optional)
+     * @param  array  $data  Array containing OCR processing results
      */
     public function __construct(array $data)
     {
-        $this->ocrQueueFileId = $data['ocrQueueFileId'] ?? 0;
-        $this->subjectId = $data['subjectId'] ?? '';
-        $this->status = $data['status'] ?? 'failed';
+        $this->fileId = (int) ($data['fileId'] ?? 0);
+        $this->queueId = (int) ($data['queueId'] ?? 0);
+        $this->subjectId = (string) ($data['subjectId'] ?? '');
+        $this->status = (string) ($data['status'] ?? 'failed');
         $this->text = $data['text'] ?? null;
         $this->error = $data['error'] ?? null;
 
@@ -78,26 +75,29 @@ class TesseractOcrUpdateJob implements ShouldQueue
     /**
      * Execute the job to update OCR results.
      *
-     * Updates the subject's OCR text if processing was successful,
-     * or stores error message if processing failed.
-     * Marks the queue file as processed and checks for queue completion.
-     *
      * @param  SubjectService  $subjectService  Service to update subject data
      */
     public function handle(SubjectService $subjectService): void
     {
-        $file = OcrQueueFile::find($this->ocrQueueFileId);
+        // Simple lookup - no relationship needed for the main worker loop
+        $file = $this->fileId > 0
+            ? OcrQueueFile::find($this->fileId)
+            : OcrQueueFile::where('subject_id', $this->subjectId)
+                ->where('processed', 0)
+                ->first();
 
-        if (! $file || $file->subject_id !== $this->subjectId) {
-            return; // stale or malformed
+        if (! $file) {
+            \Log::warning('TesseractOcrUpdateJob: File not found', [
+                'file_id' => $this->fileId,
+                'subject_id' => $this->subjectId,
+            ]);
+
+            return;
         }
-
-        $wasProcessed = $file->processed;
 
         if ($this->status === 'success') {
             $text = trim(preg_replace('/\s+/', ' ', $this->text));
             $text = $text !== '' ? $text : '[OCR produced no text]';
-
             $subjectService->update(['ocr' => $text], $this->subjectId);
         } else {
             $errorText = '[OCR Failed] '.($this->error ?? 'Unknown error');
@@ -106,62 +106,25 @@ class TesseractOcrUpdateJob implements ShouldQueue
 
         $file->processed = 1;
         $file->save();
-
-        // Only check completion if this file just flipped to processed
-        if (! $wasProcessed) {
-            $this->checkIfOcrComplete($file);
-        }
-    }
-
-    /**
-     * Check if all files in the OCR queue have been processed.
-     *
-     * If all files are processed, dispatches the completion job.
-     *
-     * @param  OcrQueueFile  $file  The processed queue file
-     */
-    private function checkIfOcrComplete(OcrQueueFile $file): void
-    {
-        $queue = OcrQueue::find($file->queue_id);
-
-        if (! $queue || ! $queue->queued) {
-            return;
-        }
-
-        $total = $queue->files()->count();
-        $processed = $queue->files()->where('processed', 1)->count();
-
-        if ($total === $processed) {
-            TesseractOcrCompleteJob::dispatch($queue);
-        }
     }
 
     /**
      * Handle a job failure.
      *
-     * Marks the queue as errored and logs the failure.
-     * Does not send email notifications to prevent spam.
-     *
-     * @param  Throwable  $throwable  The exception that caused the failure
+     * Uses eager loading to directly access and flag the parent queue as errored.
      */
     public function failed(Throwable $throwable): void
     {
-        // DO NOT SEND EMAIL HERE — would spam 20K times
-        // Just mark the queue as failed so the cron skips it
+        $file = $this->fileId > 0
+            ? OcrQueueFile::with('ocrQueue')->find($this->fileId)
+            : OcrQueueFile::with('ocrQueue')
+                ->where('subject_id', $this->subjectId)
+                ->where('processed', 0)
+                ->first();
 
-        $queue = OcrQueue::find($this->data['ocrQueueFileId'] ?? null);
-        if ($queue) {
-            $queue->error = 1;
-            $queue->save();
+        if ($file && $file->ocrQueue) {
+            $file->ocrQueue->error = 1;
+            $file->ocrQueue->save();
         }
-
-        /*
-        // Optional: log once per queue, not per file
-        \Log::error('OCR Update Job failed (queue will be marked errored)', [
-            'ocrQueueFileId' => $this->ocrQueueFileId ?? 'unknown',
-            'subjectId' => $this->subjectId ?? 'unknown',
-            'error' => $throwable->getMessage(),
-        ]);
-        */
     }
 }

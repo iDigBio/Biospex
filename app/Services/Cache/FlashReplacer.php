@@ -49,7 +49,8 @@ class FlashReplacer implements Replacer
                 ]);
 
                 // Ensure the cookie is set correctly
-                $response->headers->setCookie(cookie('app_flash', $payload, 0, '/', null, false, false, false, 'Lax'));
+                $domain = config('session.domain');
+                $response->headers->setCookie(cookie('app_flash', $payload, 0, '/', $domain, false, false, false, 'Lax'));
 
                 // Do not cache the response that contains the cookie header
                 $response->headers->set('laravel-responsecache', 'do-not-cache');

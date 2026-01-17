@@ -20,6 +20,7 @@
 
 namespace App\Services\Actor\Zooniverse;
 
+use App\Jobs\ZooniverseExportBuildCsvJob;
 use App\Jobs\ZooniverseExportProcessImagesJob;
 use App\Models\ExportQueue;
 use Aws\Lambda\LambdaClient;
@@ -40,6 +41,33 @@ class ZooniverseExportQueueService
         protected ExportQueue $exportQueue,
         protected LambdaClient $lambdaClient
     ) {}
+
+    /**
+     * Check if the active Export batch has finished processing images.
+     */
+    public function checkActiveQueuesForCompletion(): void
+    {
+        $queue = $this->exportQueue
+            ->where('queued', 1)
+            ->where('stage', 1)
+            ->where('error', 0)
+            ->first();
+
+        if (! $queue) {
+            return;
+        }
+
+        // Fast check for completion
+        $isDone = ! $queue->files()->where('processed', 0)->exists();
+
+        if ($isDone) {
+            $queue->stage = 2;
+            $queue->save();
+
+            // Trigger the next stage (CSV Build)
+            ZooniverseExportBuildCsvJob::dispatch($queue);
+        }
+    }
 
     /**
      * Process the next available export queue item if conditions are met.
@@ -87,8 +115,9 @@ class ZooniverseExportQueueService
             throw new \Exception("Export Lambda concurrency is 0 — skipping queue #{$exportQueue->id}");
         }
 
-        // 5. Start Listener & Dispatch
-        \Artisan::queue('update:listen-controller start')
+        // 5. Start Listeners & Dispatch
+        // Using unified controller to start update listener and shared DLQ listener
+        \Artisan::queue('sqs:control export_update image_trigger_dlq --action=start')
             ->onQueue(config('config.queue.default'));
 
         $exportQueue->stage = 1;
