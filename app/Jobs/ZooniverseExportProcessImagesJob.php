@@ -74,7 +74,7 @@ class ZooniverseExportProcessImagesJob implements ShouldQueue
 
         // Retrieve Queue URLs needed for the payload
         $queueUrl = $sqs->getQueueUrl([
-            'QueueName' => config('services.aws.sqs.export_image_tasks'),
+            'QueueName' => config('services.aws.sqs.image_trigger'),
         ])['QueueUrl'];
 
         $updatesQueueUrl = $sqs->getQueueUrl([

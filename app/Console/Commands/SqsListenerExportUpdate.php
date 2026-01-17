@@ -135,18 +135,19 @@ class SqsListenerExportUpdate extends Command
     private function dispatchImageProcessJob(array $data): void
     {
         $status = $data['status'] ?? throw new \InvalidArgumentException('Missing status');
-        $subjectId = $data['subjectId'] ?? throw new \InvalidArgumentException('Missing subjectId');
+
+        // Allow either fileId or subjectId for lookup flexibility
+        if (! isset($data['fileId']) && ! isset($data['subjectId'])) {
+            throw new \InvalidArgumentException('Missing both fileId and subjectId');
+        }
 
         // Dispatch the job for BOTH success and failure
-        // The job itself will handle the status correctly and update the DB
         ZooniverseExportImageUpdateJob::dispatch($data);
 
-        // Only throw/log if it's an unexpected status (optional)
-        // TODO remove this once we've confirmed that the job is working correctly'
         if ($status === 'failed') {
             $error = $data['error'] ?? 'Unknown error';
-            Log::error("Image processing failed for image #{$subjectId}: {$error}", $data);
-            // Do NOT throw here — we want the message deleted
+            $id = $data['fileId'] ?? $data['subjectId'];
+            Log::error("Image processing failed for image #{$id}: {$error}", $data);
         }
     }
 

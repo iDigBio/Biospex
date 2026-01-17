@@ -68,9 +68,15 @@ class ExportQueueCommand extends Command
         $expeditionId = $this->argument('expeditionId');
 
         try {
-            is_null($expeditionId)
-                ? $this->queueService->processNextQueue()
-                : $this->cleanupService->resetExpeditionExport($expeditionId);
+            if (is_null($expeditionId)) {
+                // 1. Check for finished image processing
+                $this->queueService->checkActiveQueuesForCompletion();
+
+                // 2. Process the next waiting queue
+                $this->queueService->processNextQueue();
+            } else {
+                $this->cleanupService->resetExpeditionExport($expeditionId);
+            }
         } catch (\Throwable $e) {
             $this->fail($e);
         }
