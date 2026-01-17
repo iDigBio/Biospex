@@ -70,7 +70,6 @@ return [
             'batch_update' => "{$queuePrefix}-batch-update",
             'image_trigger' => "{$queuePrefix}-image-trigger",
             'image_trigger_dlq' => "{$queuePrefix}-image-trigger-dlq",
-            'export_image_tasks' => "{$queuePrefix}-export-image-tasks",
             'export_update' => "{$queuePrefix}-export-update",
             'export_zip_trigger' => "{$queuePrefix}-export-zip-trigger",
             'reconcile_trigger' => "{$queuePrefix}-reconcile-trigger",
