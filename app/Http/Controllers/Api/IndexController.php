@@ -23,7 +23,7 @@ namespace App\Http\Controllers\Api;
 /**
  * Class IndexController
  */
-class IndexController
+class IndexController extends ApiController
 {
     /**
      * @return string
@@ -31,5 +31,29 @@ class IndexController
     public function index()
     {
         return \View::make('front.api-index');
+    }
+
+    /**
+     * Reset OPcache
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function resetOpcache(string $token)
+    {
+        $validToken = config('app.opcache_webhook_token', null);
+
+        if (empty($validToken) || $token !== $validToken) {
+            return $this->errorUnauthorized('Invalid reset token.');
+        }
+
+        if (function_exists('opcache_reset')) {
+            if (opcache_reset()) {
+                return $this->respondWithArray(['message' => 'OPcache reset successful']);
+            }
+
+            return $this->errorInternalError('OPcache reset failed');
+        }
+
+        return $this->errorInternalError('OPcache extension not loaded');
     }
 }

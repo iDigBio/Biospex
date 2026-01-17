@@ -17,6 +17,7 @@ return [
     'current_path' => env('APP_CURRENT_PATH', '/data/web/biospex/current'),
     'server_user' => env('APP_SERVER_USER', 'ubuntu'),
     'registration' => env('APP_REGISTRATION', true),
+    'opcache_webhook_token' => env('OPCACHE_WEBHOOK_TOKEN', null),
 
     /*
     |--------------------------------------------------------------------------

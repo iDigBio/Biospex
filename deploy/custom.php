@@ -37,8 +37,6 @@ namespace Deployer;
  * =============================================================================
  */
 
-use Exception;
-
 desc('Install Composer dependencies safely (with --no-scripts to prevent database connection issues)');
 task('deploy:vendors', function () {
     if (! test('[ -f {{release_path}}/composer.json ]')) {
@@ -240,38 +238,34 @@ task('deploy:ci-artifacts', function () {
 
 desc('Reset OpCache after deployment');
 task('opcache:reset', function () {
-    // Method 1: Direct PHP CLI OpCache reset (try first)
+    $token = $_ENV['OPCACHE_WEBHOOK_TOKEN'] ?? getenv('OPCACHE_WEBHOOK_TOKEN') ?? '';
+
+    if (empty($token)) {
+        writeln('⚠️  Skipping OpCache reset: OPCACHE_WEBHOOK_TOKEN not set');
+
+        return;
+    }
+
+    // Determine the base URL. If deployer is local, use your local test domain.
+    // In production, currentHost()->get('hostname') or a configured app_url is best.
+    $environment = get('environment', 'production');
+    $domain = ($environment === 'production') ? 'biospex.org' : 'dev.biospex.org';
+
+    // For local testing, you can change this to 'localhost' or 'opcache.test'
+    $url = "https://api.{$domain}/opcache/reset/{$token}";
+
     try {
-        run('php {{release_or_current_path}}/artisan tinker --execute="if (function_exists(\'opcache_reset\')) { opcache_reset(); echo \'OpCache reset via CLI\'; } else { echo \'OpCache not available via CLI\'; }"');
-        writeln('✅ OpCache reset successful via CLI');
-    } catch (Exception $e) {
-        writeln('⚠️  CLI OpCache reset failed, trying webhook method...');
+        writeln("Triggering OpCache reset via API: {$url}");
+        // -k used if testing locally with self-signed certs
+        $response = run("curl -sL -k '{$url}'");
 
-        // Method 2: Webhook-based OpCache reset (fallback)
-        try {
-            $webhookToken = $_ENV['OPCACHE_WEBHOOK_TOKEN'] ?? getenv('OPCACHE_WEBHOOK_TOKEN') ?? '';
-            if (empty($webhookToken)) {
-                throw new Exception('OPCACHE_WEBHOOK_TOKEN not set');
-            }
-
-            $environment = get('environment', 'production');  // default to production
-            $appUrl = $appUrl = ($environment === 'development' || str_contains($environment, 'dev'))
-                ? 'https://devopcache.biospex.org'
-                : 'https://opcache.biospex.org';
-
-            $webhookUrl = "{$appUrl}/admin/opcache/reset/{$webhookToken}";
-            $response = run("curl -X POST -H 'Content-Type: application/json' '{$webhookUrl}'");
-
-            writeln('✅ OpCache reset successful via webhook');
-            writeln('Response: '.$response);
-        } catch (Exception $webhookException) {
-            writeln('❌ Both CLI and webhook OpCache reset methods failed');
-            writeln('CLI Error: '.$e->getMessage());
-            writeln('Webhook Error: '.$webhookException->getMessage());
-
-            // Don't fail the deployment, just warn
-            writeln('⚠️  Deployment will continue without OpCache reset');
+        if (str_contains($response, 'successful')) {
+            writeln('✅ OpCache reset successful');
+        } else {
+            throw new \Exception("Response: {$response}");
         }
+    } catch (\Exception $e) {
+        writeln('❌ OpCache reset failed: '.$e->getMessage());
     }
 });
 
