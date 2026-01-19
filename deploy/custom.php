@@ -208,18 +208,12 @@ task('deploy:ci-artifacts', function () {
     $nestLevelCmd = run('find . -type d -name "deployment-package" -printf "%p\\n" | wc -l');
     $nests = (int) trim($nestLevelCmd);
 
-    if ($nests === 0) {
-        // Assume flat
-    } elseif ($nests === 1) {
-        // Single level: rsync as before
-        run('rsync -av deployment-package/ ./');
-        run('rm -rf deployment-package');
-    } else {
-        // Multiple nests: Find innermost and rsync up (silent flatten)
-        $innermost = run('find . -type d -name "deployment-package" | sort -r | head -1');  // Deepest path
+    if ($nests > 0) {
+        // Find innermost (or only) and rsync up (silent flatten)
+        $innermost = run('find . -type d -name "deployment-package" | sort -r | head -1');
         $innermost = trim($innermost);
         if (! empty($innermost)) {
-            run("rsync -av '{$innermost}/' ./");  // Copy contents of deepest to root
+            run("rsync -av '{$innermost}/' ./");  // Copy contents to root
             // Clean all deployment-package dirs
             run('find . -type d -name "deployment-package" -exec rm -rf {} +');
         }
