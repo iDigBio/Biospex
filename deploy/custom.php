@@ -252,12 +252,12 @@ task('opcache:reset', function () {
     $domain = ($environment === 'production') ? 'biospex.org' : 'dev.biospex.org';
 
     // For local testing, you can change this to 'localhost' or 'opcache.test'
-    $url = "https://api.{$domain}/opcache/reset/{$token}";
+    $url = "https://api.{$domain}/opcache/reset";
 
     try {
         writeln("Triggering OpCache reset via API: {$url}");
-        // -k used if testing locally with self-signed certs
-        $response = run("curl -sL -k '{$url}'");
+        // Use -X POST and -d to send the token in the body
+        $response = run("curl -sL -k -X POST -d 'token={$token}' '{$url}'");
 
         if (str_contains($response, 'successful')) {
             writeln('✅ OpCache reset successful');

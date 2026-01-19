@@ -34,12 +34,13 @@ class IndexController extends ApiController
     }
 
     /**
-     * Reset OPcache
+     * Reset OpCache
      *
      * @return \Illuminate\Http\Response
      */
-    public function resetOpcache(string $token)
+    public function resetOpcache(\Illuminate\Http\Request $request)
     {
+        $token = $request->input('token');
         $validToken = config('app.opcache_webhook_token', null);
 
         if (empty($validToken) || $token !== $validToken) {
@@ -48,12 +49,12 @@ class IndexController extends ApiController
 
         if (function_exists('opcache_reset')) {
             if (opcache_reset()) {
-                return $this->respondWithArray(['message' => 'OPcache reset successful']);
+                return $this->respondWithArray(['message' => 'OpCache reset successful']);
             }
 
-            return $this->errorInternalError('OPcache reset failed');
+            return $this->errorInternalError('OpCache reset failed');
         }
 
-        return $this->errorInternalError('OPcache extension not loaded');
+        return $this->errorInternalError('OpCache extension not loaded');
     }
 }

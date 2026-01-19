@@ -21,4 +21,4 @@
 use App\Http\Controllers\Api\IndexController;
 
 Route::get('/', [IndexController::class, 'index'])->name('api.index.get');
-Route::get('/opcache/reset/{token}', [IndexController::class, 'resetOpcache'])->name('api.opcache.reset');
+Route::post('/opcache/reset', [IndexController::class, 'resetOpcache'])->name('api.opcache.reset');
