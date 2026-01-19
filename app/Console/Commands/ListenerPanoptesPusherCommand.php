@@ -403,12 +403,18 @@ class ListenerPanoptesPusherCommand extends Command
             return;
         }
 
-        // MASTER GATEKEEPER - Strictly 1 hour cooldown across all error types
-        $lockKey = 'panoptes_listener_global_email_cooldown';
-        if (Cache::has($lockKey)) {
-            return;
+        // PHYSICAL FILE LOCK GATEKEEPER - Survives Cache::flush() and process restarts
+        $lockFile = storage_path('framework/panoptes_pusher_email.lock');
+
+        if (file_exists($lockFile)) {
+            $lastSent = (int) file_get_contents($lockFile);
+            if ((time() - $lastSent) < 3600) {
+                return; // Less than an hour ago
+            }
         }
-        Cache::put($lockKey, true, 3600);
+
+        // Record current time in lock file
+        file_put_contents($lockFile, time());
 
         try {
             $subject = ($isCritical ? '[CRITICAL] ' : '[ERROR] ').'Panoptes Listener - '.config('app.name');
