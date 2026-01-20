@@ -90,6 +90,6 @@ return [
 
     'prefix' => env(
         'CACHE_PREFIX',
-        Str::slug(config('app.name', 'laravel').'_'.config('app.env', 'local'), '_').'_cache'
+        Str::slug(config('app.tag', 'laravel').'_'.config('app.env', 'local'), '_').'_cache'
     ),
 ];
